@@ -10,9 +10,9 @@
     {% endwith %}
 
     <ul>
-        <li>Present in {{ server.num_submissions|default:"?" }} submission{{ server.num_submissions|default:2|pluralize }}.</li>
-        <li>Currently used by {{ server.num_hosts|default:"?" }} host{{ server.num_hosts|default:2|pluralize }}.</li>
-        <li>Has been used by {{ server.num_all_hosts|default:"?" }} host{{ server.num_all_hosts|default:2|pluralize }}.</li>
-        <li>First appeared in DB on {{ server.added_on|default:"?" }}.</li>
+        <li>Present in {{ server.num_submissions|default_if_none:"?" }} submission{{ server.num_submissions|default_if_none:2|pluralize }}.</li>
+        <li>Currently used by {{ server.num_hosts|default_if_none:"?" }} host{{ server.num_hosts|default_if_none:2|pluralize }}.</li>
+        <li>Has been used by {{ server.num_all_hosts|default_if_none:"?" }} host{{ server.num_all_hosts|default_if_none:2|pluralize }}.</li>
+        <li>First appeared in DB on {{ server.added_on|default_if_none:"?" }}.</li>
     </ul>
 {% endblock content %}

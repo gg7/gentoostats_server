@@ -10,9 +10,9 @@
     {% endwith %}
 
     <ul>
-        <li>Present in {{ keyword.num_submissions|default:"?" }} submission{{ feature.num_submissions|default:2|pluralize }}.</li>
-        <li>Currently used by {{ keyword.num_hosts|default:"?" }} host{{ keyword.num_hosts|default:2|pluralize }}.</li>
-        <li>Has been used by {{ keyword.num_all_hosts|default:"?" }} host{{ keyword.num_all_hosts|default:2|pluralize }}.</li>
-        <li>First appeared in DB on {{ keyword.added_on|default:"?" }}.</li>
+        <li>Present in {{ keyword.num_submissions|default_if_none:"?" }} submission{{ feature.num_submissions|default_if_none:2|pluralize }}.</li>
+        <li>Currently used by {{ keyword.num_hosts|default_if_none:"?" }} host{{ keyword.num_hosts|default_if_none:2|pluralize }}.</li>
+        <li>Has been used by {{ keyword.num_all_hosts|default_if_none:"?" }} host{{ keyword.num_all_hosts|default_if_none:2|pluralize }}.</li>
+        <li>First appeared in DB on {{ keyword.added_on|default_if_none:"?" }}.</li>
     </ul>
 {% endblock content %}

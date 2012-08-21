@@ -188,14 +188,12 @@ class Package(AtomABC):
 
     @models.permalink
     def get_absolute_url(self):
-        # TODO:
-        return ('stats:package_details_url', (), {
-            'category': self.category,
-            'package_name': self.package_name,
-            'version': self.version,
-            'slot': self.slot,
-            'repository': self.repository,
-        })
+        return ('stats:package_details_url', (), {'package': unicode(self)})
+
+    @property
+    def num_hosts(self):
+        return Submission.objects.latest_submissions\
+                .filter(installations__package__id=self.id).count()
 
 class Atom(AtomABC):
     """

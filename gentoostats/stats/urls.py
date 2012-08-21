@@ -110,18 +110,6 @@ urlpatterns = patterns('gentoostats.stats.views',
     ),
     #}}}
 
-    # Category(ies): #{{{
-    url( r'^stats/category/$'
-       , 'category_stats'
-       , name='category_stats_url'
-    ),
-
-    url( r'^stats/category/(?P<category>\S+)/'
-       , 'category_details'
-       , name='category_details_url'
-    ),
-    #}}}
-
     # Submission(s): #{{{
     url( r'^stats/submission/(?P<id>\d+)/'
        , 'submission_details'
@@ -148,7 +136,17 @@ urlpatterns = patterns('gentoostats.stats.views',
     ),
     #}}}
 
-    # TODO: /package/
+    # Packages: #{{{
+    url( r'^stats/package/$'
+       , 'package_search'
+       , name='package_search_url'
+    ),
+
+    url( r'^stats/package/(?P<package>\S+)'
+       , 'package_details'
+       , name='package_details_url'
+    ),
+    #}}}
 
     # API: #{{{
     # url( r'^api', include(api.urls)),

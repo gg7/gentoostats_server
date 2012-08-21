@@ -1,0 +1,25 @@
+{% extends "stats/base.html" %}
+{% load url from future %}
+{% load general %}
+
+{% block title %}Detailed Package Statistics | Gentoostats {% endblock title %}
+
+{% block content %}
+    {% if invalid %}
+        <h1 class="error">Error: Invalid atom: '{{ query }}'"</h1>
+    {% else %}
+        {% with this_sucks="Packages Matching '"|append:query|append:"'" %}
+            {% h1 this_sucks %}
+        {% endwith %}
+
+        {% if not packages %}
+            <h2>No results, sorry.</h2>
+        {% else %}
+            <ul>
+            {% for package in packages %}
+                <li>{{ package }} (used by {{ package.num_hosts|default_if_none:"?" }} host{{ package.num_hosts|default_if_none:2|pluralize }})</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+{% endblock content %}

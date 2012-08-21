@@ -4,6 +4,9 @@ import json
 import operator
 import datetime
 
+from portage.exception import InvalidAtom
+from portage.dep import Atom as PortageAtom
+
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page, cache_control
 from django.core.urlresolvers import reverse
@@ -106,6 +109,7 @@ def overall_stats(request):
 
     return render(request, 'stats/overall_stats.html', context)
 
+# Hosts: #{{{
 @cache_control(public=True)
 @cache_page(24 * 60 * 60)
 def host_search(request):
@@ -156,6 +160,7 @@ def host_details(request, host_id):
     )
 
     return render(request, 'stats/host_details.html', context)
+#}}}
 
 @cache_control(public=True)
 @cache_page(1 * 60)
@@ -204,6 +209,7 @@ def feature_details(request, feature):
 
     return render(request, 'stats/feature_details.html', context)
 
+# Servers: #{{{
 @cache_control(public=True)
 @cache_page(1 * 60)
 def server_stats(request):
@@ -243,7 +249,9 @@ def sync_details(request, server_id):
     )
 
     return render(request, 'stats/server_details.html', context)
+#}}}
 
+# Repositories: #{{{
 @cache_control(public=True)
 @cache_page(1 * 60)
 def repository_stats(request):
@@ -276,24 +284,57 @@ def repository_details(request, name):
     )
 
     return render(request, 'stats/generic_details.html', context)
+#}}}
 
 @cache_control(public=True)
 @cache_page(1 * 60)
-def category_stats(request):
+def package_search(request):
+    """
+    TODO: Use a real form here.
+    """
+
+    return render(request, 'stats/package_search.html')
+
+@cache_control(public=True)
+@cache_page(1 * 60)
+def package_details(request, package):
     """
     TODO: add a description.
     """
 
-    return render(request, 'stats/not_implemented.html')
+    context = dict(
+        query = package,
+    )
 
-@cache_control(public=True)
-@cache_page(1 * 60)
-def category_details(request, category):
-    """
-    TODO: add a description.
-    """
+    try:
+        patom = PortageAtom( package
+                           , allow_wildcard = False # at least for now
+                           , allow_repo     = True
+        )
+    except InvalidAtom as e:
+        return render( request
+                     , 'stats/package_details.html' # reuse the same template
+                     , dict(context, invalid=True)  # set context['invalid']
+                     , status=400                   # "Bad Request"
+        )
 
-    return render(request, 'stats/not_implemented.html')
+    # Find all Package objects that satisfy the PortageAtom by using Q objects:
+    q_list = [Q(cp=patom.cp)]
+
+    if patom.repo:
+        q_list.append(Q(repository__name=patom.repo))
+
+    if patom.version:
+        q_list.append(Q(version=patom.version))
+
+    if patom.slot:
+        q_list.append(Q(slot=patom.slot))
+
+    q_final = reduce(operator.and_, q_list)
+    matching_packages = Package.objects.filter(q_final).distinct()
+
+    context['packages'] = matching_packages
+    return render(request, 'stats/package_details.html', context)
 
 @cache_control(public=True)
 @cache_page(1 * 60)
@@ -321,6 +362,7 @@ submission_details = \
     )
 #}}}
 
+# USE Flags: #{{{
 @cache_control(public=True)
 @cache_page(1 * 60)
 def use_stats(request):
@@ -356,6 +398,7 @@ def use_details(request, useflag):
     )
 
     return render(request, 'stats/generic_details.html', context)
+#}}}
 
 @cache_control(public=True)
 @cache_page(1 * 60)
@@ -379,7 +422,7 @@ def profile_details(request, profile):
     return render(request, 'stats/generic_details.html', context)
 
 @cache_control(public=True)
-#@cache_page(10 * 60) # TODO: uncomment this in production
+#@cache_page(1 * 60) # TODO: uncomment this in production
 @cache_page(0)
 def app_stats(request, dead=False):
     stats = [

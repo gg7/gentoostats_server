@@ -1,0 +1,10 @@
+{% extends "stats/base.html" %}
+{% load url from future %}
+{% load general %}
+
+{% block title %}Package Statistics | Gentoostats {% endblock title %}
+
+{% block content %}
+    {% h1 "Package Statistics" %}
+    <p>Try {% url 'stats:package_details_url' package='some_atom' %}</p>
+{% endblock content %}

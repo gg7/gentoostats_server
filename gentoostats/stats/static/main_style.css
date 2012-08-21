@@ -49,6 +49,10 @@ p.code {
     font-size: 1.15em;
 }
 
+.error {
+    color: #B60003;
+}
+
 input[type='submit'] {
     margin-top: 10px;
     font-size: 1.2em;
